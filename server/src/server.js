@@ -1,4 +1,7 @@
 import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import cors from "cors";
 import express from "express";
 import http from "http";
@@ -7,6 +10,11 @@ import { connectDb } from "./config/db.js";
 import { Message } from "./models/Message.js";
 import { messagesRouter } from "./routes/messages.js";
 import { broadcastJson } from "./websocket/broadcast.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const clientDist = path.resolve(__dirname, "../../client/dist");
+const clientIndex = path.join(clientDist, "index.html");
+const clientBuilt = fs.existsSync(clientIndex);
 
 const PORT = Number(process.env.PORT) || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -28,6 +36,19 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/messages", messagesRouter);
+
+if (clientBuilt) {
+  app.use(express.static(clientDist));
+  app.use((req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    if (req.path.startsWith("/api")) return next();
+    res.sendFile(clientIndex, (err) => (err ? next(err) : undefined));
+  });
+}
+
+app.use((_req, res) => {
+  res.status(404).json({ error: "not found" });
+});
 
 app.use((err, _req, res, _next) => {
   console.error(err);
@@ -92,6 +113,7 @@ wss.on("connection", (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`HTTP + WebSocket listening on http://localhost:${PORT}`);
-  console.log(`WebSocket path: ws://localhost:${PORT}/ws`);
+  const where = clientBuilt ? " (serving React app from client/dist)" : "";
+  console.log(`HTTP + WebSocket listening on port ${PORT}${where}`);
+  console.log(`WebSocket path: /ws`);
 });
