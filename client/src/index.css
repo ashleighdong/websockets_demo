@@ -1,0 +1,48 @@
+:root {
+  --text: #101012;
+  --muted: #5c5f6b;
+  --bg: #f0f1f5;
+  --surface: #ffffff;
+  --surface-2: #e8eaef;
+  --border: #c9cdd8;
+  --accent: #1e5a8e;
+  --accent-contrast: #f8fafc;
+  --ok: #0d6b3a;
+  --warn: #9a6b00;
+  --danger: #9b1c1c;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #ececf1;
+    --muted: #9b9fb0;
+    --bg: #0f1014;
+    --surface: #181a21;
+    --surface-2: #22252e;
+    --border: #353945;
+    --accent: #6cb2e8;
+    --accent-contrast: #0a0b0f;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --danger: #f87171;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
